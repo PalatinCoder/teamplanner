@@ -11,8 +11,14 @@ import (
 type Dataprovider interface {
 	//GetMatches returns all matches
 	GetMatches() ([]Match, error)
+	// GetMatch inflates a match into the given object.
+	// The object must have all required properties set for a call to Model.Key() to succeed
+	GetMatch(*Match) error
 	//GetTeammates returns all teammates
 	GetTeammates() ([]Teammate, error)
+	// GetTeammate inflates a teammate into the given object.
+	// The object must have all required properties set for a call to Model.Key() to succeed
+	GetTeammate(*Teammate) error
 	GetVotes() ([]Vote, error)
 	GetVotesByTeammate(mate Teammate) ([]Vote, error)
 	GetVotesForMatch(match Match) ([]Vote, error)
@@ -88,6 +94,19 @@ func (r *BuntDb) GetMatches() ([]Match, error) {
 		return nil, err
 	}
 	return matches, nil
+}
+
+// GetMatch inflates a match date
+func (r *BuntDb) GetMatch(match *Match) error {
+	err := r.db.View(func(tx *buntdb.Tx) error {
+		j, err := tx.Get(match.Key(), false)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal([]byte(j), &match)
+		return err
+	})
+	return err
 }
 
 // GetVotes retrieves all votes

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/tidwall/buntdb"
@@ -167,6 +168,42 @@ func TestRepository_GetMatches(t *testing.T) {
 			}
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("Repository.GetMatches() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRepository_GetMatch(t *testing.T) {
+	type fields struct {
+		db *buntdb.DB
+	}
+	type args struct {
+		match Match
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    Match
+		wantErr bool
+	}{
+		{name: "gives the correct object", fields: fields{db: filledDb}, args: args{Match{Date: Matches[1].Date}}, want: Matches[1], wantErr: false},
+		{name: "gives another correct object", fields: fields{db: filledDb}, args: args{Match{Date: Matches[2].Date}}, want: Matches[2], wantErr: false},
+		{name: "gives error on empty object", fields: fields{db: filledDb}, args: args{Match{}}, want: Match{}, wantErr: true},
+		{name: "gives error on invalid object", fields: fields{db: filledDb}, args: args{Match{Date: time.Now().AddDate(1, 0, 0).Truncate(time.Hour)}}, want: Match{Date: time.Now().AddDate(1, 0, 0).Truncate(time.Hour)}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &BuntDb{
+				db: tt.fields.db,
+			}
+			err := r.GetMatch(&tt.args.match)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.GetMatch() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(tt.args.match, tt.want) {
+				t.Errorf("Repository.GetMatch() = %v, want %v", tt.args.match, tt.want)
 			}
 		})
 	}
