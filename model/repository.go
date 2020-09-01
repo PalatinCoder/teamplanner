@@ -56,10 +56,7 @@ func (r *BuntDb) GetTeammates() ([]Teammate, error) {
 		return err
 	})
 
-	if err != nil {
-		return nil, err
-	}
-	return mates, nil
+	return mates, err
 }
 
 // GetTeammate retrieves a single teammate. The given Teammate object must have all attributes set so that a call to Teammate.Key() will be successfull.
@@ -90,10 +87,7 @@ func (r *BuntDb) GetMatches() ([]Match, error) {
 		return err
 	})
 
-	if err != nil {
-		return nil, err
-	}
-	return matches, nil
+	return matches, err
 }
 
 // GetMatch inflates a match date
@@ -123,10 +117,7 @@ func (r *BuntDb) GetVotes() ([]Vote, error) {
 		return err
 	})
 
-	if err != nil {
-		return nil, err
-	}
-	return votes, nil
+	return votes, err
 }
 
 // GetVotesByTeammate retrieves all votes by a single teammate
@@ -144,10 +135,7 @@ func (r *BuntDb) GetVotesByTeammate(mate Teammate) ([]Vote, error) {
 		return err
 	})
 
-	if err != nil {
-		return nil, err
-	}
-	return votes, nil
+	return votes, err
 }
 
 // GetVotesForMatch retrieves all votes for a matchdate
@@ -165,8 +153,5 @@ func (r *BuntDb) GetVotesForMatch(match Match) ([]Vote, error) {
 		return err
 	})
 
-	if err != nil {
-		return nil, err
-	}
-	return votes, nil
+	return votes, err
 }
