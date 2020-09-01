@@ -32,11 +32,20 @@ func (a *App) Run(addr string) {
 }
 
 func main() {
-	db, err := buntdb.Open("planner.db")
+	var dbfile, addr string
+	var ok bool
+
+	if dbfile, ok = os.LookupEnv("DBPATH"); !ok {
+		dbfile = "/data/planner.db"
+	}
+	if addr, ok = os.LookupEnv("LISTENADDR"); !ok {
+		addr = ":8042"
+	}
+
+	db, err := buntdb.Open(dbfile)
 	if err != nil {
 		panic(err)
 	}
-	addr := ":8042"
 
 	app := NewApp(db)
 	app.Run(addr)
