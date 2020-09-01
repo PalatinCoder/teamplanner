@@ -107,6 +107,41 @@ func TestRepository_GetTeammates(t *testing.T) {
 	}
 }
 
+func TestRepository_GetTeammate(t *testing.T) {
+	type fields struct {
+		db *buntdb.DB
+	}
+	type args struct {
+		mate Teammate
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    Teammate
+		wantErr bool
+	}{
+		{name: "gives the correct object", fields: fields{db: filledDb}, args: args{Teammate{Position: 1}}, want: Teammates[0], wantErr: false},
+		{name: "gives error on empty object", fields: fields{db: filledDb}, args: args{Teammate{}}, want: Teammate{}, wantErr: true},
+		{name: "gives error on invalid object", fields: fields{db: filledDb}, args: args{Teammate{Position: 900}}, want: Teammate{Position: 900}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &BuntDb{
+				db: tt.fields.db,
+			}
+			err := r.GetTeammate(&tt.args.mate)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.GetTeammate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !cmp.Equal(tt.args.mate, tt.want) {
+				t.Errorf("Repository.GetTeammate() = %v, want %v", tt.args.mate, tt.want)
+			}
+		})
+	}
+}
+
 func TestRepository_GetMatches(t *testing.T) {
 	type fields struct {
 		db *buntdb.DB

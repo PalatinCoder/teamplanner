@@ -56,6 +56,20 @@ func (r *BuntDb) GetTeammates() ([]Teammate, error) {
 	return mates, nil
 }
 
+// GetTeammate retrieves a single teammate. The given Teammate object must have all attributes set so that a call to Teammate.Key() will be successfull.
+// The given object will then be inflated with the remaining properties.
+func (r *BuntDb) GetTeammate(mate *Teammate) error {
+	err := r.db.View(func(tx *buntdb.Tx) error {
+		j, err := tx.Get(mate.Key(), false)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal([]byte(j), &mate)
+		return err
+	})
+	return err
+}
+
 // GetMatches retrieves all match dates
 func (r *BuntDb) GetMatches() ([]Match, error) {
 	var matches []Match
