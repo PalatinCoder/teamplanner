@@ -87,6 +87,17 @@ func marshallJSONWithoutError(value interface{}) []byte {
 	return j
 }
 
+// filterVotes calls f() on every vote in the slice to determine if it should be included in the filtered slice
+func filterVotes(vs []Vote, f func(Vote) bool) []Vote {
+	vsf := make([]Vote, 0)
+	for _, v := range vs {
+		if f(v) {
+			vsf = append(vsf, v)
+		}
+	}
+	return vsf
+}
+
 func TestEndToEnd(t *testing.T) {
 	db, _ := buntdb.Open(":memory:")
 	a := NewApp(db)
@@ -101,7 +112,11 @@ func TestEndToEnd(t *testing.T) {
 		wantBody   []byte
 	}{
 		{method: "GET", path: "/teammates", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates), parallel: true},
+		{method: "GET", path: fmt.Sprintf("/teammate/%s", Teammates[0].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates[0]), parallel: true},
+		{method: "GET", path: fmt.Sprintf("/teammate/%s/votes", Teammates[0].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Teammate.ID() == Teammates[0].ID() })), parallel: true},
 		{method: "GET", path: "/matches", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches), parallel: true},
+		{method: "GET", path: fmt.Sprintf("/match/%s", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches[1]), parallel: true},
+		{method: "GET", path: fmt.Sprintf("/match/%s/votes", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Match.ID() == Matches[1].ID() })), parallel: true},
 		{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes), parallel: true},
 	}
 

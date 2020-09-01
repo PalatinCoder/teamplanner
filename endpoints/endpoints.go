@@ -19,7 +19,11 @@ type Endpoints struct {
 func NewEndpoints(repo model.Dataprovider, router *mux.Router) *Endpoints {
 	e := &Endpoints{repo, router}
 	e.Router.HandleFunc("/teammates", e.getTeammates).Methods("GET")
+	e.Router.HandleFunc("/teammate/{id:[0-9]+}", e.getTeammate).Methods("GET")
+	e.Router.HandleFunc("/teammate/{id:[0-9]+}/votes", e.getVotesForTeammate).Methods("GET")
 	e.Router.HandleFunc("/matches", e.getMatches).Methods("GET")
+	e.Router.HandleFunc("/match/{id:[0-9]{8}}/votes", e.getVotesForMatch).Methods("GET")
+	e.Router.HandleFunc("/match/{id:[0-9]{8}}", e.getMatch).Methods("GET")
 	e.Router.HandleFunc("/votes", e.getVotes).Methods("GET")
 	return e
 }
