@@ -103,7 +103,7 @@ func TestEndToEnd(t *testing.T) {
 			rr := httptest.NewRecorder()
 			a.endpoints.Router.ServeHTTP(rr, req)
 
-			if status := rr.Code; status != http.StatusOK {
+			if status := rr.Code; status != tt.wantStatus {
 				t.Errorf("%s %s -> status %d, expected %d", tt.method, tt.path, rr.Code, tt.wantStatus)
 			}
 
