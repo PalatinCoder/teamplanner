@@ -54,6 +54,11 @@ func fillDb(db *buntdb.DB) {
 				return err
 			}
 		}
+		for _, m := range Votes {
+			if err := insert(tx, m); err != nil {
+				return err
+			}
+		}
 		return nil
 	})
 	if err != nil {
@@ -95,9 +100,9 @@ func TestEndToEnd(t *testing.T) {
 		wantStatus int
 		wantBody   []byte
 	}{
-		{method: "GET", path: "/teammates", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates), parallel: false},
-		{method: "GET", path: "/matches", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches), parallel: false},
-		//{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes), parallel: true},
+		{method: "GET", path: "/teammates", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates), parallel: true},
+		{method: "GET", path: "/matches", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches), parallel: true},
+		{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes), parallel: true},
 	}
 
 	for _, tt := range tests {
