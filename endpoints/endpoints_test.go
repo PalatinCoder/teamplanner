@@ -12,11 +12,14 @@ import (
 )
 
 // helper to test a handler function
-func testEndpoint(t *testing.T, handlerFuncName string, endpoint http.HandlerFunc, reqBody io.Reader, expectedStatus int, expectedBody string) {
+func testEndpoint(t *testing.T, handlerFuncName string, endpoint http.HandlerFunc, vars map[string]string, reqBody io.Reader, expectedStatus int, expectedBody string) {
 	t.Helper()
 
 	req, _ := http.NewRequest("", "", reqBody)
 	rr := httptest.NewRecorder()
+	if vars != nil {
+		req = mux.SetURLVars(req, vars)
+	}
 	endpoint.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != expectedStatus {
