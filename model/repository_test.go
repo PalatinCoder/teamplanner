@@ -304,14 +304,14 @@ func TestRepository_GetVotesForMatch(t *testing.T) {
 		{name: "empty db gives nil", fields: fields{db: emptyDb}, args: args{match: Matches[2]}, want: nil, wantErr: false}, // nil slice != empty slice!
 		//TODO {name: "empty teammate gives error", fields: fields{db: emptyDb}, args: args{mate: Teammate{}}, want: nil, wantErr: true},
 		{
-			name:    "filled db gives all items for teammate",
+			name:    "filled db gives all items for match",
 			fields:  fields{db: filledDb},
 			args:    args{match: Matches[2]},
 			want:    filterVotes(Votes, func(v Vote) bool { return cmp.Equal(v.Match, Matches[2]) }),
 			wantErr: false,
 		},
 		{
-			name:    "filled db gives all items for another teammate",
+			name:    "filled db gives all items for another match",
 			fields:  fields{db: filledDb},
 			args:    args{match: Matches[3]},
 			want:    filterVotes(Votes, func(v Vote) bool { return cmp.Equal(v.Match, Matches[3]) }),
