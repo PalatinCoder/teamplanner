@@ -143,6 +143,42 @@ func TestRepository_GetTeammate(t *testing.T) {
 	}
 }
 
+func TestRepository_SetTeammate(t *testing.T) {
+	type fields struct {
+		db *buntdb.DB
+	}
+	type args struct {
+		mate Teammate
+	}
+	tests := []struct {
+		name        string
+		fields      fields
+		args        args
+		wantReplace bool
+		wantErr     bool
+	}{
+		{name: "creates a new object", fields: fields{db: emptyDb}, args: args{Teammates[0]}, wantReplace: false, wantErr: false},
+		{name: "updates an existing object", fields: fields{db: filledDb}, args: args{Teammates[0]}, wantReplace: true, wantErr: false},
+		{name: "gives error on empty object", fields: fields{db: emptyDb}, args: args{Teammate{}}, wantReplace: false, wantErr: true},
+		{name: "gives error on invalid object", fields: fields{db: emptyDb}, args: args{Teammate{Position: 900}}, wantReplace: false, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &BuntDb{
+				db: tt.fields.db,
+			}
+			replaced, err := r.SetTeammate(&tt.args.mate)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.SetTeammate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if replaced != tt.wantReplace {
+				t.Errorf("Repository.SetTeammate() replaced = %v, wantReplace %v", tt.args.mate, tt.wantReplace)
+			}
+		})
+	}
+}
+
 func TestRepository_GetMatches(t *testing.T) {
 	type fields struct {
 		db *buntdb.DB
@@ -204,6 +240,42 @@ func TestRepository_GetMatch(t *testing.T) {
 			}
 			if !cmp.Equal(tt.args.match, tt.want) {
 				t.Errorf("Repository.GetMatch() = %v, want %v", tt.args.match, tt.want)
+			}
+		})
+	}
+}
+
+func TestRepository_SetMatch(t *testing.T) {
+	type fields struct {
+		db *buntdb.DB
+	}
+	type args struct {
+		match Match
+	}
+	tests := []struct {
+		name        string
+		fields      fields
+		args        args
+		wantReplace bool
+		wantErr     bool
+	}{
+		{name: "creates a new object", fields: fields{db: emptyDb}, args: args{Matches[1]}, wantReplace: false, wantErr: false},
+		{name: "updates an existing object", fields: fields{db: filledDb}, args: args{Matches[1]}, wantReplace: true, wantErr: false},
+		{name: "gives error on empty object", fields: fields{db: emptyDb}, args: args{Match{}}, wantReplace: false, wantErr: true},
+		{name: "gives error on invalid object", fields: fields{db: emptyDb}, args: args{Match{Description: "test"}}, wantReplace: false, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &BuntDb{
+				db: tt.fields.db,
+			}
+			replaced, err := r.SetMatch(&tt.args.match)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.SetMatch() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if replaced != tt.wantReplace {
+				t.Errorf("Repository.SetMatch() replaced = %v, wantReplace %v", tt.args.match, tt.wantReplace)
 			}
 		})
 	}
@@ -330,6 +402,43 @@ func TestRepository_GetVotesForMatch(t *testing.T) {
 			}
 			if !cmp.Equal(got, tt.want) {
 				t.Errorf("Repository.GetVotesForMatch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRepository_SetVote(t *testing.T) {
+	type fields struct {
+		db *buntdb.DB
+	}
+	type args struct {
+		vote Vote
+	}
+	tests := []struct {
+		name        string
+		fields      fields
+		args        args
+		wantReplace bool
+		wantErr     bool
+	}{
+		{name: "creates a new object", fields: fields{db: filledDb}, args: args{Vote{Teammate: Teammates[0], Match: Matches[3], Vote: VoteNo}}, wantReplace: false, wantErr: false},
+		{name: "updates an existing object", fields: fields{db: filledDb}, args: args{Votes[2]}, wantReplace: true, wantErr: false},
+		{name: "gives error on empty object", fields: fields{db: emptyDb}, args: args{Vote{}}, wantReplace: false, wantErr: true},
+		{name: "gives error on invalid match", fields: fields{db: filledDb}, args: args{Vote{Teammate: Teammates[1]}}, wantReplace: false, wantErr: true},
+		{name: "gives error on invalid mate", fields: fields{db: filledDb}, args: args{Vote{Match: Matches[3]}}, wantReplace: false, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &BuntDb{
+				db: tt.fields.db,
+			}
+			replaced, err := r.SetVote(&tt.args.vote)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Repository.SetVote() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if replaced != tt.wantReplace {
+				t.Errorf("Repository.SetVote() replaced = %v, wantReplace %v", tt.args.vote, tt.wantReplace)
 			}
 		})
 	}

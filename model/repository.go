@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/tidwall/buntdb"
@@ -11,17 +12,31 @@ import (
 type Dataprovider interface {
 	//GetMatches returns all matches
 	GetMatches() ([]Match, error)
+
 	// GetMatch inflates a match into the given object.
 	// The object must have all required properties set for a call to Model.Key() to succeed
 	GetMatch(*Match) error
+
+	SetMatch(*Match) (bool, error)
+
 	//GetTeammates returns all teammates
 	GetTeammates() ([]Teammate, error)
+
 	// GetTeammate inflates a teammate into the given object.
 	// The object must have all required properties set for a call to Model.Key() to succeed
 	GetTeammate(*Teammate) error
+
+	// SetTeammate stores the given teammate in the db
+	// It returns true if the object was replaced (i.e. updated)
+	SetTeammate(*Teammate) (bool, error)
+
 	GetVotes() ([]Vote, error)
+
 	GetVotesByTeammate(mate Teammate) ([]Vote, error)
+
 	GetVotesForMatch(match Match) ([]Vote, error)
+
+	SetVote(*Vote) (bool, error)
 }
 
 // BuntDb implements Dataprovider with buntdb as K/V store
@@ -73,6 +88,23 @@ func (r *BuntDb) GetTeammate(mate *Teammate) error {
 	return err
 }
 
+// SetTeammate sets a teammate to the given object. It returns true if the object was replaced (i.e. updated)
+func (r *BuntDb) SetTeammate(mate *Teammate) (bool, error) {
+	if mate.Position == 0 || mate.Name == "" {
+		return false, errors.New("invalid")
+	}
+	replaced := false
+	err := r.db.Update(func(tx *buntdb.Tx) error {
+		j, err := json.Marshal(mate)
+		if err != nil {
+			return err
+		}
+		_, replaced, err = tx.Set(mate.Key(), string(j), nil)
+		return err
+	})
+	return replaced, err
+}
+
 // GetMatches retrieves all match dates
 func (r *BuntDb) GetMatches() ([]Match, error) {
 	var matches []Match
@@ -103,6 +135,23 @@ func (r *BuntDb) GetMatch(match *Match) error {
 	return err
 }
 
+// SetMatch sets a match to the given object. It returns true if the object was replaced (i.e. updated)
+func (r *BuntDb) SetMatch(match *Match) (bool, error) {
+	if match.Date.IsZero() || match.Description == "" {
+		return false, errors.New("invalid")
+	}
+	replaced := false
+	err := r.db.Update(func(tx *buntdb.Tx) error {
+		j, err := json.Marshal(match)
+		if err != nil {
+			return err
+		}
+		_, replaced, err = tx.Set(match.Key(), string(j), nil)
+		return err
+	})
+	return replaced, err
+}
+
 // GetVotes retrieves all votes
 func (r *BuntDb) GetVotes() ([]Vote, error) {
 	var votes []Vote
@@ -118,6 +167,28 @@ func (r *BuntDb) GetVotes() ([]Vote, error) {
 	})
 
 	return votes, err
+}
+
+// SetVote sets a vote to the given object. It returns true if the object was replaced (i.e. updated)
+// Returns error it the match or teammate is not found
+func (r *BuntDb) SetVote(vote *Vote) (bool, error) {
+	if err := r.GetMatch(&vote.Match); err != nil {
+		return false, errors.New("match not found")
+	}
+	if err := r.GetTeammate(&vote.Teammate); err != nil {
+		return false, errors.New("teammate not found")
+	}
+
+	replaced := false
+	err := r.db.Update(func(tx *buntdb.Tx) error {
+		j, err := json.Marshal(vote)
+		if err != nil {
+			return err
+		}
+		_, replaced, err = tx.Set(vote.Key(), string(j), nil)
+		return err
+	})
+	return replaced, err
 }
 
 // GetVotesByTeammate retrieves all votes by a single teammate
