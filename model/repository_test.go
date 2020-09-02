@@ -313,8 +313,8 @@ func TestRepository_GetVotesForMatch(t *testing.T) {
 		{
 			name:    "filled db gives all items for another match",
 			fields:  fields{db: filledDb},
-			args:    args{match: Matches[3]},
-			want:    filterVotes(Votes, func(v Vote) bool { return cmp.Equal(v.Match, Matches[3]) }),
+			args:    args{match: Matches[1]},
+			want:    filterVotes(Votes, func(v Vote) bool { return cmp.Equal(v.Match, Matches[1]) }),
 			wantErr: false,
 		},
 	}

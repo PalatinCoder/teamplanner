@@ -27,7 +27,4 @@ var Votes = []Vote{
 	{Teammate: Teammates[0], Match: Matches[2], Vote: VoteYes},
 	{Teammate: Teammates[1], Match: Matches[2], Vote: VoteNo},
 	{Teammate: Teammates[2], Match: Matches[2], Vote: VoteYes},
-	{Teammate: Teammates[0], Match: Matches[3], Vote: VoteMaybe},
-	{Teammate: Teammates[1], Match: Matches[3], Vote: VoteNo},
-	{Teammate: Teammates[2], Match: Matches[3], Vote: VoteYes},
 }
