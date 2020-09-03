@@ -65,12 +65,18 @@ func (m *MockRepository) GetTeammate(mate *Teammate) error {
 	*mate = m.mates[0]
 	return nil
 }
+func (m *MockRepository) SetTeammate(mate *Teammate) (bool, error) {
+	return false, nil
+}
 func (m *MockRepository) GetMatch(match *Match) error {
 	if len(m.matches) == 0 {
 		return errors.New("not found")
 	}
 	*match = m.matches[1]
 	return nil
+}
+func (m *MockRepository) SetMatch(match *Match) (bool, error) {
+	return false, nil
 }
 func (m *MockRepository) GetVotes() ([]Vote, error) {
 	return m.votes, nil
@@ -80,6 +86,9 @@ func (m *MockRepository) GetVotesByTeammate(mate Teammate) ([]Vote, error) {
 }
 func (m *MockRepository) GetVotesForMatch(match Match) ([]Vote, error) {
 	return filterVotes(m.votes, func(v Vote) bool { return v.Match.ID() == match.ID() }), nil
+}
+func (m *MockRepository) SetVote(vote *Vote) (bool, error) {
+	return false, nil
 }
 
 //MockErrorRepository returns an error on every method
@@ -94,8 +103,14 @@ func (m *MockErrorRepository) GetTeammates() ([]Teammate, error) {
 func (m *MockErrorRepository) GetTeammate(mate *Teammate) error {
 	return errors.New("mock error")
 }
+func (m *MockErrorRepository) SetTeammate(*Teammate) (bool, error) {
+	return false, errors.New("mock error")
+}
 func (m *MockErrorRepository) GetMatch(match *Match) error {
 	return errors.New("mock error")
+}
+func (m *MockErrorRepository) SetMatch(*Match) (bool, error) {
+	return false, errors.New("mock error")
 }
 func (m *MockErrorRepository) GetVotes() ([]Vote, error) {
 	return nil, errors.New("mock error")
@@ -105,4 +120,7 @@ func (m *MockErrorRepository) GetVotesByTeammate(Teammate) ([]Vote, error) {
 }
 func (m *MockErrorRepository) GetVotesForMatch(Match) ([]Vote, error) {
 	return nil, errors.New("mock error")
+}
+func (m *MockErrorRepository) SetVote(*Vote) (bool, error) {
+	return false, errors.New("mock error")
 }
