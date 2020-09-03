@@ -1,6 +1,8 @@
 package endpoints
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -34,4 +36,39 @@ func (e *Endpoints) getMatch(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	respondWithJSON(res, http.StatusOK, match)
+}
+
+func (e *Endpoints) setMatch(res http.ResponseWriter, req *http.Request) {
+	var match model.Match
+	err := decodeJSONBody(res, req, &match)
+	if err != nil {
+		var e ErrMalformedRequest
+		if errors.Is(err, &e) {
+			http.Error(res, e.msg, e.code)
+		} else {
+			log.Println(err.Error())
+			respondWithError(res, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	replaced, err := e.repo.SetMatch(&match)
+	if err != nil {
+		switch {
+		case err.Error() == "invalid":
+			respondWithError(res, http.StatusBadRequest, "invalid match object")
+		case err.Error() == "not found":
+			respondWithError(res, http.StatusNotFound, err.Error())
+		default:
+			respondWithError(res, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	status := http.StatusCreated
+	if replaced {
+		status = http.StatusOK
+	}
+
+	respondWithJSON(res, status, &match)
 }

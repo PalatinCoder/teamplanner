@@ -16,6 +16,9 @@ func testEndpoint(t *testing.T, handlerFuncName string, endpoint http.HandlerFun
 	t.Helper()
 
 	req, _ := http.NewRequest("", "", reqBody)
+	if req.ContentLength > 0 {
+		req.Header.Add("content-type", "application/json")
+	}
 	rr := httptest.NewRecorder()
 	if vars != nil {
 		req = mux.SetURLVars(req, vars)

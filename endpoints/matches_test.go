@@ -1,7 +1,9 @@
 package endpoints
 
 import (
+	"bytes"
 	"io"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -50,6 +52,28 @@ func TestEndpoints_getMatch(t *testing.T) {
 
 		t.Run(tt.name, func(t *testing.T) {
 			testEndpoint(t, "getMatch()", e.getMatch, tt.vars, tt.body, tt.expectedStatus, tt.expectedBody)
+		})
+	}
+}
+
+func TestEndpoints_setMatch(t *testing.T) {
+	tests := []struct {
+		name           string
+		repository     model.Dataprovider
+		vars           map[string]string
+		body           io.Reader
+		expectedStatus int
+		expectedBody   string
+	}{
+		{"creates entity", &MockRepository{matches: Matches}, nil, bytes.NewReader(marshallJSONWithoutError(Matches[1])), http.StatusCreated, string(marshallJSONWithoutError(Matches[1]))},
+		{"gives internal server error when repository goes wrong", &MockErrorRepository{}, nil, bytes.NewReader(marshallJSONWithoutError(Matches[1])), http.StatusInternalServerError, `{"error":"mock error"}`},
+	}
+
+	for _, tt := range tests {
+		e := &Endpoints{tt.repository, nil}
+
+		t.Run(tt.name, func(t *testing.T) {
+			testEndpoint(t, "setMatch()", e.setMatch, tt.vars, tt.body, tt.expectedStatus, tt.expectedBody)
 		})
 	}
 }

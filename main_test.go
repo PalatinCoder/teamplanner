@@ -104,7 +104,6 @@ func TestEndToEnd(t *testing.T) {
 	fillDb(db)
 
 	tests := []struct {
-		parallel   bool
 		method     string
 		path       string
 		reqBody    io.Reader
@@ -118,12 +117,17 @@ func TestEndToEnd(t *testing.T) {
 		{method: "GET", path: fmt.Sprintf("/match/%s", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches[1])},
 		{method: "GET", path: fmt.Sprintf("/match/%s/votes", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Match.ID() == Matches[1].ID() }))},
 		{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes)},
+		{method: "POST", path: "/teammate", reqBody: bytes.NewReader(marshallJSONWithoutError(Teammates[1])), wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates[1])},
+		{method: "POST", path: "/match", reqBody: bytes.NewReader(marshallJSONWithoutError(Matches[1])), wantStatus: 200, wantBody: marshallJSONWithoutError(Matches[1])},
 	}
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s %s", tt.method, tt.path), func(t *testing.T) {
 			req, _ := http.NewRequest(tt.method, tt.path, tt.reqBody)
 			rr := httptest.NewRecorder()
+			if req.ContentLength > 0 {
+				req.Header.Add("content-type", "application/json")
+			}
 			a.endpoints.Router.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != tt.wantStatus {
