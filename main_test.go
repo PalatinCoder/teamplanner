@@ -111,21 +111,17 @@ func TestEndToEnd(t *testing.T) {
 		wantStatus int
 		wantBody   []byte
 	}{
-		{method: "GET", path: "/teammates", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates), parallel: true},
-		{method: "GET", path: fmt.Sprintf("/teammate/%s", Teammates[0].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates[0]), parallel: true},
-		{method: "GET", path: fmt.Sprintf("/teammate/%s/votes", Teammates[0].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Teammate.ID() == Teammates[0].ID() })), parallel: true},
-		{method: "GET", path: "/matches", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches), parallel: true},
-		{method: "GET", path: fmt.Sprintf("/match/%s", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches[1]), parallel: true},
-		{method: "GET", path: fmt.Sprintf("/match/%s/votes", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Match.ID() == Matches[1].ID() })), parallel: true},
-		{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes), parallel: true},
+		{method: "GET", path: "/teammates", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates)},
+		{method: "GET", path: fmt.Sprintf("/teammate/%s", Teammates[0].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates[0])},
+		{method: "GET", path: fmt.Sprintf("/teammate/%s/votes", Teammates[0].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Teammate.ID() == Teammates[0].ID() }))},
+		{method: "GET", path: "/matches", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches)},
+		{method: "GET", path: fmt.Sprintf("/match/%s", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Matches[1])},
+		{method: "GET", path: fmt.Sprintf("/match/%s/votes", Matches[1].ID()), reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(filterVotes(Votes, func(v Vote) bool { return v.Match.ID() == Matches[1].ID() }))},
+		{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes)},
 	}
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%s %s", tt.method, tt.path), func(t *testing.T) {
-			if tt.parallel {
-				t.Parallel()
-			}
-
 			req, _ := http.NewRequest(tt.method, tt.path, tt.reqBody)
 			rr := httptest.NewRecorder()
 			a.endpoints.Router.ServeHTTP(rr, req)
