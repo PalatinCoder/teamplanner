@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 // Teammate represents a teammate with name, position in the team and his status
 type Teammate struct {
@@ -27,4 +30,10 @@ func (m Teammate) Key() string {
 // ID returns the short identifier for the teammate
 func (m Teammate) ID() string {
 	return fmt.Sprintf("%d", m.Position)
+}
+
+// FromID generates a stub object based on the given id. The stub object can then be used to get the full object from the repository
+func (m *Teammate) FromID(id string) (err error) {
+	m.Position, err = strconv.Atoi(id)
+	return err
 }

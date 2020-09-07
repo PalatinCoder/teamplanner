@@ -20,3 +20,9 @@ func (m Match) Key() string {
 func (m Match) ID() string {
 	return fmt.Sprintf("%s", m.Date.Format("20060102"))
 }
+
+// FromID generates a stub object based on the given id. The stub object can then be used to get the full object from the repository
+func (m *Match) FromID(id string) (err error) {
+	m.Date, err = time.Parse("20060102", id)
+	return err
+}

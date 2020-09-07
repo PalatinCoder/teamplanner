@@ -54,7 +54,7 @@ func NewBuntDb(db *buntdb.DB) *BuntDb {
 func createIndexes(db *buntdb.DB) {
 	db.CreateIndex("teammates", "mate:*", buntdb.IndexJSON("position"))
 	db.CreateIndex("matches", "match:*", buntdb.IndexJSON("date"))
-	db.CreateIndex("votes", "vote:*", buntdb.IndexJSON("match.date"))
+	db.CreateIndex("votes", "vote:*", buntdb.IndexJSON("match"))
 }
 
 // GetTeammates retrieves all teammates
@@ -160,6 +160,8 @@ func (r *BuntDb) GetVotes() ([]Vote, error) {
 		err := tx.Ascend("votes", func(key, value string) bool {
 			var m Vote
 			json.Unmarshal([]byte(value), &m)
+			r.GetTeammate(&m.Teammate)
+			r.GetMatch(&m.Match)
 			votes = append(votes, m)
 			return true
 		})
@@ -200,6 +202,8 @@ func (r *BuntDb) GetVotesByTeammate(mate Teammate) ([]Vote, error) {
 		err := tx.AscendKeys(pattern, func(key, value string) bool {
 			var m Vote
 			json.Unmarshal([]byte(value), &m)
+			r.GetTeammate(&m.Teammate)
+			r.GetMatch(&m.Match)
 			votes = append(votes, m)
 			return true
 		})
@@ -218,6 +222,8 @@ func (r *BuntDb) GetVotesForMatch(match Match) ([]Vote, error) {
 		err := tx.AscendKeys(pattern, func(key, value string) bool {
 			var m Vote
 			json.Unmarshal([]byte(value), &m)
+			r.GetTeammate(&m.Teammate)
+			r.GetMatch(&m.Match)
 			votes = append(votes, m)
 			return true
 		})
