@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "tags": [
+    {
+      "name": "teamplanner-spa",
+      "description": "An application to help you manage your team's matches and lineup",
+      "properties": [],
+      "events": [],
+      "slots": [],
+      "cssProperties": []
+    }
+  ]
+}
