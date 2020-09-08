@@ -119,6 +119,7 @@ func TestEndToEnd(t *testing.T) {
 		{method: "GET", path: "/votes", reqBody: nil, wantStatus: 200, wantBody: marshallJSONWithoutError(Votes)},
 		{method: "POST", path: "/teammate", reqBody: bytes.NewReader(marshallJSONWithoutError(Teammates[1])), wantStatus: 200, wantBody: marshallJSONWithoutError(Teammates[1])},
 		{method: "POST", path: "/match", reqBody: bytes.NewReader(marshallJSONWithoutError(Matches[1])), wantStatus: 200, wantBody: marshallJSONWithoutError(Matches[1])},
+		{method: "POST", path: "/vote", reqBody: bytes.NewReader(marshallJSONWithoutError(Votes[1])), wantStatus: 200, wantBody: marshallJSONWithoutError(Votes[1])},
 	}
 
 	for _, tt := range tests {

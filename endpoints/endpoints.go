@@ -41,6 +41,7 @@ func NewEndpoints(repo model.Dataprovider, router *mux.Router) *Endpoints {
 	e.Router.HandleFunc("/match/{id:[0-9]{8}}/votes", e.getVotesForMatch).Methods("GET")
 	e.Router.HandleFunc("/match/{id:[0-9]{8}}", e.getMatch).Methods("GET")
 	e.Router.HandleFunc("/votes", e.getVotes).Methods("GET")
+	e.Router.HandleFunc("/vote", e.setVote).Methods("POST")
 	return e
 }
 

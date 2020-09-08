@@ -1,7 +1,9 @@
 package endpoints
 
 import (
+	"bytes"
 	"io"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -73,6 +75,28 @@ func TestEndpoints_getVotesForMatch(t *testing.T) {
 
 		t.Run(tt.name, func(t *testing.T) {
 			testEndpoint(t, "getVotesForMatch()", e.getVotesForMatch, tt.vars, tt.body, tt.expectedStatus, tt.expectedBody)
+		})
+	}
+}
+
+func TestEndpoints_setVote(t *testing.T) {
+	tests := []struct {
+		name           string
+		repository     model.Dataprovider
+		vars           map[string]string
+		body           io.Reader
+		expectedStatus int
+		expectedBody   string
+	}{
+		{"creates entity", &MockRepository{mates: Teammates, matches: Matches}, nil, bytes.NewReader(marshallJSONWithoutError(Votes[1])), http.StatusCreated, string(marshallJSONWithoutError(Votes[1]))},
+		{"gives internal server error when repository goes wrong", &MockErrorRepository{}, nil, bytes.NewReader(marshallJSONWithoutError(Votes[1])), http.StatusInternalServerError, `{"error":"mock error"}`},
+	}
+
+	for _, tt := range tests {
+		e := &Endpoints{tt.repository, nil}
+
+		t.Run(tt.name, func(t *testing.T) {
+			testEndpoint(t, "setVote()", e.setVote, tt.vars, tt.body, tt.expectedStatus, tt.expectedBody)
 		})
 	}
 }
