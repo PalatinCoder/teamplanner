@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -28,7 +29,13 @@ func NewApp(db *buntdb.DB) *App {
 
 // Run runs the HTTP server on the given address
 func (a *App) Run(addr string) {
-	log.Fatal(http.ListenAndServe(addr, handlers.CombinedLoggingHandler(os.Stdout, a.endpoints.Router)))
+	srv := &http.Server{
+		Handler:      handlers.CombinedLoggingHandler(os.Stdout, a.endpoints.Router),
+		Addr:         addr,
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
 
 func main() {
