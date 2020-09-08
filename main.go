@@ -24,6 +24,7 @@ func NewApp(db *buntdb.DB) *App {
 	app := &App{}
 	app.repo = model.NewBuntDb(db)
 	app.endpoints = endpoints.NewEndpoints(app.repo, mux.NewRouter())
+	app.endpoints.Router.PathPrefix("/").Handler(spaHandler{indexPath: "index.html", staticPath: "teamplanner-spa/dist"})
 	return app
 }
 
