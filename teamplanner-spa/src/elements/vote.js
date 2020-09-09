@@ -22,6 +22,10 @@ export class Vote extends LitElement {
                 glyph: "❔",
                 color: "#bdbd3f"
             },
+            NaN: {
+                glyph: "-",
+                color: "#ccc"
+            }
         };
         return html`
             <div
@@ -34,6 +38,14 @@ export class Vote extends LitElement {
     _onClick() {
         if (this.disabled) 
             return;
+
+        // if the vote is still undefined, init it with 0 (i.e. yes)
+        if (isNaN(this.vote)) {
+            this.vote = 0
+            return
+        }
+
+        // cycle through the three possible values (yes, no, maybe)
         this.vote = (this.vote + 1) % 3
     }
 }
