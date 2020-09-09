@@ -8,6 +8,16 @@ export class Vote extends LitElement {
         };
     }
 
+    static get styles() {
+        return css`
+        :host {
+            -webkit-user-select: none;
+                -ms-user-select: none;
+                    user-select: none;
+        }
+        `;
+    }
+
     render() {
         let styles = {
             0: {
