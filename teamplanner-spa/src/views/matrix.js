@@ -25,7 +25,7 @@ export class VoteMatrix extends LitElement {
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            margin-top: 55px;
+            margin-top: 50px;
             margin-right: 5px;
         }
 
@@ -46,7 +46,7 @@ export class VoteMatrix extends LitElement {
         }
 
         tp-teammate {
-            margin-bottom: 5px;
+            margin-top: 5px;
         }
         `;
     }
@@ -61,7 +61,7 @@ export class VoteMatrix extends LitElement {
             </div>
             <div class="grid">
                 ${this.matches.map(
-                    match => html`<tp-match .date="${match.date}", .description="${match.description}"></tp-match>`
+                    match => html`<tp-match .date="${match.date}" .description="${match.description}"></tp-match>`
                 )}
 
                 ${this.generateVotesElements()}
