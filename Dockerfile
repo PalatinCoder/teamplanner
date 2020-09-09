@@ -1,4 +1,4 @@
-FROM golang:alpine AS build
+FROM golang:alpine AS api-build
 RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /go/src/app
@@ -9,9 +9,15 @@ RUN go get -d -v ./...
 RUN go test -cover ./...
 RUN go build
 
+FROM node:alpine AS spa-build
+WORKDIR /home/node
+COPY teamplanner-spa .
+RUN npm i && npm run build
+
 FROM alpine AS runtime
-COPY --from=build /go/src/app/teamplanner /bin/teamplanner
-RUN mkdir /data
+RUN mkdir /data && mkdir /dist
+COPY --from=api-build /go/src/app/teamplanner /bin/teamplanner
+COPY --from=spa-build /home/node/dist/ /dist
 
 ENV DBPATH=/data/teamplanner.db
 ENV LISTENADDR=":8042"
