@@ -93,6 +93,7 @@ export class App extends LitElement {
         <div id="offline-notification">🚫 Keine Internetverbindung<br>Zwischengespeicherte Daten, keine Änderungen möglich</div>
       ` : ''}
       <header>
+        <img src="logo-default.png">
         <h1>Teamplanner</h1>
       </header>
       <main>
