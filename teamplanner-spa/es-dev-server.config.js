@@ -24,6 +24,11 @@ module.exports = {
                         {"teammate":"3","match":"20200910","vote":1}
                     ], type: 'application/json'}
                 }
+                if (context.path === '/vote' && context.method === 'POST') {
+                    return { body: {} }
+                    //context.throw(500, 'test')
+                    //return new Promise((resolve, reject) => { setTimeout(() => resolve({ body: {} }), 5000) })
+                }
             }
         }
     ]
