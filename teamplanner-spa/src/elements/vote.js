@@ -9,6 +9,7 @@ export class Vote extends LitElement {
             vote: { type: Number },
             enabled: { type: Boolean },
             blur: { type: Boolean },
+            _isOnline: { type: Boolean },
         };
     }
 
@@ -20,6 +21,13 @@ export class Vote extends LitElement {
                     user-select: none;
         }
         `;
+    }
+
+    constructor() {
+        super();
+        this._isOnline = navigator.onLine;
+        window.addEventListener('online', () => this._isOnline = true);
+        window.addEventListener('offline', () => this._isOnline = false);
     }
 
     render() {
@@ -58,7 +66,7 @@ export class Vote extends LitElement {
     }
 
     _onClick() {
-        if (!this.enabled) 
+        if (!(this.enabled && this._isOnline)) 
             return;
 
         // init the vote with 0, if it's undefined, otherwise cycle through the three possible states

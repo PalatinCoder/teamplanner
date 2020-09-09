@@ -6,6 +6,7 @@ export class App extends LitElement {
       teammates: { type: Array },
       matches: { type: Array },
       votes: { type: Array },
+      isOffline: { type: Boolean },
     };
   }
 
@@ -14,9 +15,17 @@ export class App extends LitElement {
     this.teammates = [];
     this.matches = [];
     this.votes = [];
+    this.isOffline = !navigator.onLine;
+
+    window.addEventListener('online', () => { this.isOffline = false; this.fetchData() })
+    window.addEventListener('offline', () => this.isOffline = true)
   }
 
   firstUpdated() {
+    this.fetchData()
+  }
+
+  fetchData() {
     fetch('/matches', { headers: { 'Accept': 'application/json'}})
       .then(r => r.json())
       .then(r => { this.matches = r })
@@ -26,6 +35,7 @@ export class App extends LitElement {
     fetch('/votes', { headers: { 'Accept': 'application/json'}})
     .then(r => r.json())
     .then(r => { this.votes = r })
+    // TODO request an update
   }
 
   static get styles() {
@@ -65,11 +75,23 @@ export class App extends LitElement {
         font-size: small;
         align-items: center;
       }
+
+      #offline-notification {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 5px;
+        font-size: smaller;
+        background-color: #aaa;
+      }
     `;
   }
 
   render() {
     return html`
+      ${this.isOffline ? html`
+        <div id="offline-notification">🚫 Keine Internetverbindung<br>Zwischengespeicherte Daten, keine Änderungen möglich</div>
+      ` : ''}
       <header>
         <h1>Teamplanner</h1>
       </header>
