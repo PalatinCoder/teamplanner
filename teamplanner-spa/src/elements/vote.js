@@ -39,6 +39,10 @@ export class Vote extends LitElement {
             NaN: {
                 glyph: "-",
                 color: "#ccc"
+            },
+            999: {
+                glyph: "⌛",
+                color: "#ccc"
             }
         };
         return html`
@@ -54,17 +58,21 @@ export class Vote extends LitElement {
     }
 
     _onClick() {
-        console.log(`changing vote for teammate ${this.teammate} match ${this.match}`)
         if (!this.enabled) 
             return;
 
-        // if the vote is still undefined, init it with 0 (i.e. yes)
-        if (isNaN(this.vote)) {
-            this.vote = 0
-            return
-        }
+        // init the vote with 0, if it's undefined, otherwise cycle through the three possible states
+        let oldVote = this.vote
+        let newVote = isNaN(this.vote) ? 0 : (this.vote + 1) % 3
 
-        // cycle through the three possible values (yes, no, maybe)
-        this.vote = (this.vote + 1) % 3
+        this.vote = 999
+
+        fetch('/vote', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ teammate: this.teammate, match: this.match, vote: newVote })
+        })
+        .then(() => { this.vote = newVote })
+        .catch(error => { alert('Angabe konnte nicht gespeichert werden.'); console.log({error}); this.vote = oldVote })
     }
 }
