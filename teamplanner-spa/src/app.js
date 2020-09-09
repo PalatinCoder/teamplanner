@@ -3,9 +3,29 @@ import { LitElement, html, css } from 'lit-element';
 export class App extends LitElement {
   static get properties() {
     return {
-      title: { type: String },
-      page: { type: String },
+      teammates: { type: Array },
+      matches: { type: Array },
+      votes: { type: Array },
     };
+  }
+
+  constructor() {
+    super();
+    this.teammates = [];
+    this.matches = [];
+    this.votes = [];
+  }
+
+  firstUpdated() {
+    fetch('/matches', { headers: { 'Accept': 'application/json'}})
+      .then(r => r.json())
+      .then(r => { this.matches = r })
+    fetch('/teammates', { headers: { 'Accept': 'application/json'}})
+      .then(r => r.json())
+      .then(r => { this.teammates = r })
+    fetch('/votes', { headers: { 'Accept': 'application/json'}})
+    .then(r => r.json())
+    .then(r => { this.votes = r })
   }
 
   static get styles() {
@@ -54,7 +74,7 @@ export class App extends LitElement {
         <h1>Teamplanner</h1>
       </header>
       <main>
-        <vote-matrix></vote-matrix>
+        <vote-matrix .teammates=${this.teammates} .matches=${this.matches} .votes=${this.votes}></vote-matrix>
       </main>
 
       <p class="app-footer">
