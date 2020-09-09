@@ -1,0 +1,16 @@
+{
+    "name": "Teamplanner",
+    "start_url": "/",
+    "background_color": "#ededed",
+    "theme_color": "#ededed",
+    "display": "minimal-ui",
+    "icons": [{
+        "src": "icon192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    }, {
+        "src": "icon512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+    }]
+}

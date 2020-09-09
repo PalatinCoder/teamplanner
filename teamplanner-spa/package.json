@@ -6,9 +6,10 @@
   },
   "devDependencies": {
     "@open-wc/building-rollup": "^1.0.0",
+    "es-dev-server": "^1.5.0",
     "rimraf": "^2.6.3",
     "rollup": "^2.3.4",
-    "es-dev-server": "^1.5.0"
+    "rollup-plugin-copy": "^3.3.0"
   },
   "name": "teamplanner-spa",
   "version": "0.0.0",
