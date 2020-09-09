@@ -94,7 +94,7 @@ export class App extends LitElement {
       ` : ''}
       <header>
         <img src="logo-default.png">
-        <h1>Teamplanner</h1>
+        <h1>Teamplaner</h1>
       </header>
       <main>
         <vote-matrix .teammates=${this.teammates} .matches=${this.matches} .votes=${this.votes}></vote-matrix>
