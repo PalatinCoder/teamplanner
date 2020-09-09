@@ -3,6 +3,9 @@ import { LitElement, html, css } from 'lit-element';
 export class VoteMatrix extends LitElement {
     static get properties() {
         return {
+            teammates: { type: Array },
+            matches: { type: Array },
+            votes: { type: Array }
         }
     }
 
@@ -46,28 +49,42 @@ export class VoteMatrix extends LitElement {
         return html`
         <div class="wrapper">
             <div class="list">
-                <tp-teammate name="Nat" status="0"></tp-teammate>
-                <tp-teammate name="Torrey" status="1"></tp-teammate>
-                <tp-teammate name="Heath" status="0"></tp-teammate>
-                <tp-teammate name="Gaetano" status="2"></tp-teammate>
-                <tp-teammate name="Nat" status="0"></tp-teammate>
-                <tp-teammate name="Torrey" status="1"></tp-teammate>
-                <tp-teammate name="Heath" status="0"></tp-teammate>
-                <tp-teammate name="Gaetano" status="2"></tp-teammate>
+                ${this.teammates.map(
+                    mate => html`<tp-teammate name="${mate.name}" status="${mate.status}"></tp-teammate>`
+                )}
             </div>
             <div class="grid">
-                <tp-match date="02.01.2021" description="some text"></tp-match>
-                <tp-vote vote="0" disabled></tp-vote>
-                <tp-vote vote="1" disabled></tp-vote>
-                <tp-vote vote="2" disabled></tp-vote>
-                <tp-vote vote="2" disabled></tp-vote>
-                <tp-vote vote="0" disabled></tp-vote>
-                <tp-vote vote="1" disabled></tp-vote>
-                <tp-vote vote="2" disabled></tp-vote>
-                <tp-vote vote="2" disabled></tp-vote>
+                ${this.matches.map(
+                    match => html`<tp-match .date="${match.date}", .description="${match.description}"></tp-match>`
+                )}
+
+                ${this.generateVotesElements()}
             </div>
         </div>
         
         `;
+    }
+
+    // Generate a vote box for each cell in the teammate x match matrix. It looks up every generated vote in the data from the API and sets the vote accordingly, or leaves it undefined
+    generateVotesElements() {
+        let elements = [] 
+        for (var m = 0; m < this.matches.length; m++) {
+            for (var t = 0; t < this.teammates.length; t++) {
+
+                let teammate = this.teammates[t].position
+                let match = this.matches[m].date.split("T")[0].replaceAll("-","") // holy shit this is ugly. "convert" JSON date to YYYYMMDD, as needed for the api
+                let vote = this.votes.find(v => v.teammate == this.teammates[t].position && v.match == match) || { vote: undefined } // define a dummy object when no vote is found, so we can pass the property to the <tp-vote>
+
+                // t starts at 0 while the grid-rows start at 1, so the top row being the matches the votes start at row 2
+                // same thing for the columns, except there's no offset here
+                let element = html`<tp-vote style="grid-row: ${t+2}; grid-column: ${m+1};"
+                                        teammate="${teammate}"
+                                        match="${match}"
+                                        vote="${vote.vote}">`
+
+                elements = [...elements, element]
+            }
+        }
+        return elements
     }
 }

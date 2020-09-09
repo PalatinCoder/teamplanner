@@ -3,6 +3,8 @@ import { LitElement, html, css } from 'lit-element';
 export class Vote extends LitElement {
     static get properties() {
         return {
+            teammate: { type: Number },
+            match: { type: String },
             vote: { type: Number },
             disabled: { type: Boolean },
         };
