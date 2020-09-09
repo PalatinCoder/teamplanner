@@ -88,7 +88,7 @@ func TestRepository_GetTeammates(t *testing.T) {
 		want    []Teammate
 		wantErr bool
 	}{
-		{name: "empty db gives nil", fields: fields{db: emptyDb}, want: nil, wantErr: false}, // nil slice != empty slice!
+		{name: "empty db gives nil", fields: fields{db: emptyDb}, want: []Teammate{}, wantErr: false},
 		{name: "filled db gives all items", fields: fields{db: filledDb}, want: Teammates, wantErr: false},
 	}
 	for _, tt := range tests {
@@ -189,7 +189,7 @@ func TestRepository_GetMatches(t *testing.T) {
 		want    []Match
 		wantErr bool
 	}{
-		{name: "empty db gives nil", fields: fields{db: emptyDb}, want: nil, wantErr: false}, // nil slice != empty slice!
+		{name: "empty db gives empty slice", fields: fields{db: emptyDb}, want: []Match{}, wantErr: false},
 		{name: "filled db gives all items", fields: fields{db: filledDb}, want: Matches, wantErr: false},
 	}
 	for _, tt := range tests {
@@ -291,7 +291,7 @@ func TestRepository_GetVotes(t *testing.T) {
 		want    []Vote
 		wantErr bool
 	}{
-		{name: "empty db gives nil", fields: fields{db: emptyDb}, want: nil, wantErr: false}, // nil slice != empty slice!
+		{name: "empty db gives nil", fields: fields{db: emptyDb}, want: []Vote{}, wantErr: false},
 		{name: "filled db gives all items", fields: fields{db: filledDb}, want: Votes, wantErr: false},
 	}
 	for _, tt := range tests {

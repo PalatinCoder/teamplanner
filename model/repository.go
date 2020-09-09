@@ -59,7 +59,7 @@ func createIndexes(db *buntdb.DB) {
 
 // GetTeammates retrieves all teammates
 func (r *BuntDb) GetTeammates() ([]Teammate, error) {
-	var mates []Teammate
+	mates := []Teammate{}
 
 	err := r.db.View(func(tx *buntdb.Tx) error {
 		err := tx.Ascend("teammates", func(key, value string) bool {
@@ -107,7 +107,7 @@ func (r *BuntDb) SetTeammate(mate *Teammate) (bool, error) {
 
 // GetMatches retrieves all match dates
 func (r *BuntDb) GetMatches() ([]Match, error) {
-	var matches []Match
+	matches := []Match{}
 
 	err := r.db.View(func(tx *buntdb.Tx) error {
 		err := tx.Ascend("matches", func(key, value string) bool {
@@ -154,7 +154,7 @@ func (r *BuntDb) SetMatch(match *Match) (bool, error) {
 
 // GetVotes retrieves all votes
 func (r *BuntDb) GetVotes() ([]Vote, error) {
-	var votes []Vote
+	votes := []Vote{}
 
 	err := r.db.View(func(tx *buntdb.Tx) error {
 		err := tx.Ascend("votes", func(key, value string) bool {
