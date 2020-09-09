@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from "lit-html/directives/style-map";
 
 export class Vote extends LitElement {
     static get properties() {
@@ -6,7 +7,8 @@ export class Vote extends LitElement {
             teammate: { type: Number },
             match: { type: String },
             vote: { type: Number },
-            disabled: { type: Boolean },
+            enabled: { type: Boolean },
+            blur: { type: Boolean },
         };
     }
 
@@ -41,14 +43,19 @@ export class Vote extends LitElement {
         };
         return html`
             <div
+
                 @click="${this._onClick}" 
-                style="background-color: ${styles[this.vote].color}"
+                style=${styleMap({
+                    backgroundColor: styles[this.vote].color,
+                    opacity: this.blur ? '0.4' : '1'
+                })}
                 >${styles[this.vote].glyph}</div>
         `;
     }
 
     _onClick() {
-        if (this.disabled) 
+        console.log(`changing vote for teammate ${this.teammate} match ${this.match}`)
+        if (!this.enabled) 
             return;
 
         // if the vote is still undefined, init it with 0 (i.e. yes)

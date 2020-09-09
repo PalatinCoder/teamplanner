@@ -1,12 +1,16 @@
 import { LitElement, html, css } from 'lit-element';
+import { styleMap } from "lit-html/directives/style-map";
 
 export class Teammate extends LitElement {
     static get properties() {
         return {
             name: { type: String },
             status: { type: Number },
+            selected: { type: Boolean },
         };
     }
+
+
 
     render() {
         let styles = {
@@ -15,16 +19,21 @@ export class Teammate extends LitElement {
                 style: 'normal'
             },
             1: {
-                color: '#aaa',
+                color: '#555',
                 style: 'normal'
             },
             2: {
-                color: '#aaa',
+                color: '#555',
                 style: 'italic'
             },
         }
         return html`
-            <div style="color: ${styles[this.status].color}; font-style: ${styles[this.status].style};">${this.name}</div>
+            <div style=${styleMap({
+                color: styles[this.status].color,
+                fontStyle: styles[this.status].style,
+                padding: '0 5px',
+                backgroundColor: this.selected ? '#ccc': 'inherit'
+            })}>${this.name}</div>
         `;
     }
 }
