@@ -11,7 +11,7 @@ export class Match extends LitElement {
 
     render() {
         return html`
-            <div>${this.date}</div>
+            <div>${(new Date(this.date)).toLocaleDateString()}</div>
             <div style="font-size: small">${this.description}</div
         `;
     }
