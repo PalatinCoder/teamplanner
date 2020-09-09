@@ -4,7 +4,7 @@ import { styleMap } from "lit-html/directives/style-map";
 export class Vote extends LitElement {
     static get properties() {
         return {
-            teammate: { type: Number },
+            teammate: { type: String },
             match: { type: String },
             vote: { type: Number },
             enabled: { type: Boolean },
