@@ -29,6 +29,9 @@ export class App extends LitElement {
     PullToRefresh.setPassiveMode(true)
     PullToRefresh.init({
       mainElement: 'body',
+      instructionsPullToRefresh: 'Ziehen zum Aktualisieren',
+      instructionsReleaseToRefresh: 'Loslassen zum Aktualisieren',
+      instructionsRefreshing: 'Wird aktualisiert',
       onRefresh() { that.fetchData() }
     })
 
