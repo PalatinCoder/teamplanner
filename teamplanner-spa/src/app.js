@@ -9,6 +9,7 @@ export class App extends LitElement {
       matches: { type: Array },
       votes: { type: Array },
       isOffline: { type: Boolean },
+      isLoading: { type: Boolean },
     };
   }
 
@@ -18,6 +19,7 @@ export class App extends LitElement {
     this.matches = [];
     this.votes = [];
     this.isOffline = !navigator.onLine;
+    this.isLoading = true;
 
     window.addEventListener('online', () => { this.isOffline = false; this.fetchData() })
     window.addEventListener('offline', () => this.isOffline = true)
@@ -28,17 +30,23 @@ export class App extends LitElement {
   }
 
   fetchData() {
-    // TODO loading indicator
+    this.isLoading = true;
+
+    Promise.all([
     fetch('/matches', { headers: { 'Accept': 'application/json'}})
       .then(r => r.json())
       .then(r => r.filter(v => moment(v.date).isSameOrAfter(moment(), 'day')))
-      .then(r => { this.matches = r })
+        .then(r => { this.matches = r }),
     fetch('/teammates', { headers: { 'Accept': 'application/json'}})
       .then(r => r.json())
-      .then(r => { this.teammates = r })
+        .then(r => { this.teammates = r }),
     fetch('/votes', { headers: { 'Accept': 'application/json'}})
     .then(r => r.json())
     .then(r => { this.votes = r })
+    ]).catch(error => { alert('Daten konnten nicht abgerufen werden.'); console.log(error) })
+    .finally(() => {
+      this.isLoading = false
+    })
     // TODO request an update
   }
 
@@ -88,6 +96,23 @@ export class App extends LitElement {
         font-size: smaller;
         background-color: #aaa;
       }
+
+      #spinner {
+        border: 16px solid #aaa;
+        border-top: 16px solid #ccc;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      }
+
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
     `;
   }
 
@@ -101,7 +126,7 @@ export class App extends LitElement {
         <h1>Teamplaner</h1>
       </header>
       <main>
-        <vote-matrix .teammates=${this.teammates} .matches=${this.matches} .votes=${this.votes}></vote-matrix>
+        ${this.isLoading ? html`<div id="spinner"></div>` :''}
       </main>
 
       <p class="app-footer">
