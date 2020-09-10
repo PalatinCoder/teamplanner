@@ -33,3 +33,85 @@ The database is by default stored at `/data/teamplanner.db`. Mount `/data` to a 
 You can also change the location of the database by setting the environment variable `DBPATH` to the absolute path of the file.
 
 Technically it's also possible to store the database completely in memory by setting `DBPATH` to `:memory:`.
+
+## Endpoints
+
+### `GET /teammates`
+Returns all teammates as JSON array.
+
+### `GET /teammate/{id:[0-9]+}`
+Returns the given teammate.
+
+### `GET /teammate/{id:[0-9]+}/votes`
+Returns all votes by the given teammate as array
+
+### `POST /teammate`
+Sets (i.e. creates or updates) a teammate. The request body MUST contain the data as JSON object.
+
+### `GET /matches`
+Returns all matches as JSON array.
+
+### `GET /match/{id:[0-9]{8}}`
+Returns the given match.
+
+### `GET /match/{id:[0-9]+}/votes`
+Returns all votes for the given match as array
+
+### `POST /match`
+Sets (i.e. creates or updates) a match. The request body MUST contain the data as JSON object.
+
+### `GET /votes`
+Returns all votes as array
+
+### `POST /vote`
+Creates or updates a vote. The request body MUST contain the data as JSON object
+
+## Schema
+
+### Teammate
+
+```
+{
+    "type": "object",
+    "properties": {
+        "name": { "type": "string" },
+        "position": { "type": "number" },
+        "status": { "type": "number" }
+    },
+    "required: ["name", "position", "status" ]
+}
+```
+Position is used as the identifier for the entity.
+`status` has the possible values `0-2` for "Available", "Unavailable" and "Spare".
+
+### Match
+```
+{
+    "type": "object",
+    "properties": {
+        "date": { "type": "date" },
+        "description": { "type": "string" }
+    },
+    "required: ["date", "description" ]
+}
+```
+The date in the format `YYYYMMDD` is used as the identifier for the entity.
+
+### Vote
+```
+{
+    "type": "object",
+    "properties": {
+        "teammate": { "type": "string" },
+        "match": { "type": "string" },
+        "vote": { "type": "number" }
+    },
+    "required: ["teammate", "match", "vote" ]
+}
+```
+`teammate` and `match` are references to the respective entities by their identifier.
+`vote` has the possible values `0-2` for Yes, No, Maybe.
+
+## Limitations
+
+Currently there is no authentication or authorization whatsoever supported by the API. Use at your own risk, if you want to.
