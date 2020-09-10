@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import moment from 'moment/dist/moment.js'
+import PullToRefresh from "pulltorefreshjs";
 
 
 export class App extends LitElement {
@@ -24,20 +25,34 @@ export class App extends LitElement {
   }
 
   firstUpdated() {
+    let that = this // oof... :D
+    PullToRefresh.setPassiveMode(true)
+    PullToRefresh.init({
+      mainElement: 'body',
+      onRefresh() { that.fetchData() }
+    })
+
     this.fetchData()
   }
 
-  fetchData() {
-    fetch('/matches', { headers: { 'Accept': 'application/json'}})
-      .then(r => r.json())
-      .then(r => r.filter(v => moment(v.date).isSameOrAfter(moment(), 'day')))
-      .then(r => { this.matches = r })
-    fetch('/teammates', { headers: { 'Accept': 'application/json'}})
-      .then(r => r.json())
-      .then(r => { this.teammates = r })
-    fetch('/votes', { headers: { 'Accept': 'application/json'}})
-    .then(r => r.json())
-    .then(r => { this.votes = r })
+  async fetchData() {
+    try {
+      return Promise.all([
+        fetch('/matches', { headers: { 'Accept': 'application/json' } })
+          .then(r => r.json())
+          .then(r_1 => r_1.filter(v => moment(v.date).isSameOrAfter(moment(), 'day')))
+          .then(r_2 => { this.matches = r_2; }),
+        fetch('/teammates', { headers: { 'Accept': 'application/json' } })
+          .then(r_3 => r_3.json())
+          .then(r_4 => { this.teammates = r_4; }),
+        fetch('/votes', { headers: { 'Accept': 'application/json' } })
+          .then(r_5 => r_5.json())
+          .then(r_6 => { this.votes = r_6; })
+      ]);
+    }
+    catch (error) {
+      alert('Daten konnten nicht abgerufen werden.'); console.log(error);
+    }
   }
 
   voteChange(event) {
