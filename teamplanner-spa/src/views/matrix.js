@@ -87,7 +87,7 @@ export class VoteMatrix extends LitElement {
 
                 let teammate = this.teammates[t].position
                 let match = this.matches[m].date.split("T")[0].replaceAll("-","") // holy shit this is ugly. "convert" JSON date to YYYYMMDD, as needed for the api
-                let vote = this.votes.find(v => v.teammate == this.teammates[t].position && v.match == match) || { vote: undefined } // define a dummy object when no vote is found, so we can pass the property to the <tp-vote>
+                let vote = this.votes.find(v => v.teammate == this.teammates[t].position && v.match == match) || { teammate, match, vote: undefined } // define a dummy object when no vote is found, so we can pass the property to the <tp-vote>
 
                 let isSelected = this.selectedTeammate === teammate;
                 let isNothingSelected = this.selectedTeammate == 0;
@@ -97,9 +97,7 @@ export class VoteMatrix extends LitElement {
                 // t starts at 0 while the grid-rows start at 1, so the top row being the matches the votes start at row 2
                 // same thing for the columns, except there's no offset here
                 let element = html`<tp-vote style="grid-row: ${t+2}; grid-column: ${m+1};"
-                                        teammate="${teammate}"
-                                        match="${match}"
-                                        vote="${vote.vote}"
+                                        .vote="${vote}"
                                         ?enabled=${isSelected}
                                         ?blur=${!shouldNotBlur}>`
 

@@ -4,9 +4,7 @@ import { styleMap } from "lit-html/directives/style-map";
 export class Vote extends LitElement {
     static get properties() {
         return {
-            teammate: { type: String },
-            match: { type: String },
-            vote: { type: Number },
+            vote: { type: Object },
             enabled: { type: Boolean },
             blur: { type: Boolean },
             _isOnline: { type: Boolean },
@@ -44,7 +42,7 @@ export class Vote extends LitElement {
                 glyph: "❔",
                 color: "#bdbd3f"
             },
-            NaN: {
+            undefined: {
                 glyph: "-",
                 color: "#ccc"
             },
@@ -58,10 +56,10 @@ export class Vote extends LitElement {
 
                 @click="${this._onClick}" 
                 style=${styleMap({
-                    backgroundColor: styles[this.vote].color,
+                    backgroundColor: styles[this.vote.vote].color,
                     opacity: this.blur ? '0.4' : '1'
                 })}
-                >${styles[this.vote].glyph}</div>
+                >${styles[this.vote.vote].glyph}</div>
         `;
     }
 
@@ -70,10 +68,9 @@ export class Vote extends LitElement {
             return;
 
         // init the vote with 0, if it's undefined, otherwise cycle through the three possible states
-        let oldVote = this.vote
-        let newVote = isNaN(this.vote) ? 0 : (this.vote + 1) % 3
+        let newVote = isNaN(this.vote.vote) ? 0 : (this.vote.vote + 1) % 3
 
-        this.vote = 999
+        this.vote.vote = 999 // loading indicator
 
         fetch('/vote', {
             method: 'POST',
