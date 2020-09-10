@@ -1,4 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
+import moment from 'moment/dist/moment.js'
+
 
 export class App extends LitElement {
   static get properties() {
@@ -26,8 +28,10 @@ export class App extends LitElement {
   }
 
   fetchData() {
+    // TODO loading indicator
     fetch('/matches', { headers: { 'Accept': 'application/json'}})
       .then(r => r.json())
+      .then(r => r.filter(v => moment(v.date).isSameOrAfter(moment(), 'day')))
       .then(r => { this.matches = r })
     fetch('/teammates', { headers: { 'Accept': 'application/json'}})
       .then(r => r.json())
