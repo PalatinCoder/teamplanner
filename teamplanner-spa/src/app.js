@@ -33,21 +33,32 @@ export class App extends LitElement {
     this.isLoading = true;
 
     Promise.all([
-    fetch('/matches', { headers: { 'Accept': 'application/json'}})
-      .then(r => r.json())
-      .then(r => r.filter(v => moment(v.date).isSameOrAfter(moment(), 'day')))
+      fetch('/matches', { headers: { 'Accept': 'application/json'}})
+        .then(r => r.json())
+        .then(r => r.filter(v => moment(v.date).isSameOrAfter(moment(), 'day')))
         .then(r => { this.matches = r }),
-    fetch('/teammates', { headers: { 'Accept': 'application/json'}})
-      .then(r => r.json())
+      fetch('/teammates', { headers: { 'Accept': 'application/json'}})
+        .then(r => r.json())
         .then(r => { this.teammates = r }),
-    fetch('/votes', { headers: { 'Accept': 'application/json'}})
-    .then(r => r.json())
-    .then(r => { this.votes = r })
+      fetch('/votes', { headers: { 'Accept': 'application/json'}})
+        .then(r => r.json())
+        .then(r => { this.votes = r })
     ]).catch(error => { alert('Daten konnten nicht abgerufen werden.'); console.log(error) })
     .finally(() => {
       this.isLoading = false
     })
-    // TODO request an update
+  }
+
+  voteChange(event) {
+    fetch('/vote', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(event.detail)
+    })
+    .then (r => { if (!r.ok) throw Error(r.statusText)})
+    .catch(error => { alert('Angabe konnte nicht gespeichert werden.'); console.log({error}); })
+    // Could probably also store the new vote in memory instead of doing a full refresh *shrug*
+    .finally(() => this.fetchData())
   }
 
   static get styles() {
@@ -127,6 +138,7 @@ export class App extends LitElement {
       </header>
       <main>
         ${this.isLoading ? html`<div id="spinner"></div>` :''}
+        <vote-matrix .teammates=${this.teammates} .matches=${this.matches} .votes=${this.votes} @vote-change=${this.voteChange}></vote-matrix>
       </main>
 
       <p class="app-footer">

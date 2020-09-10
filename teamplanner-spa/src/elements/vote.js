@@ -71,14 +71,11 @@ export class Vote extends LitElement {
         let newVote = isNaN(this.vote.vote) ? 0 : (this.vote.vote + 1) % 3
 
         this.vote.vote = 999 // loading indicator
+        this.requestUpdate() // lit-element can't pick up that change deep in an object so we request an update manually
 
-        fetch('/vote', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ teammate: this.teammate, match: this.match, vote: newVote })
-        })
-        .then (r => { if (!r.ok) throw Error(r.statusText)})
-        .then(() => { this.vote = newVote })
-        .catch(error => { alert('Angabe konnte nicht gespeichert werden.'); console.log({error}); this.vote = oldVote })
+        this.dispatchEvent(new CustomEvent('vote-change', {
+            detail: { teammate: this.vote.teammate, match: this.vote.match, vote: newVote },
+            composed: true
+        }))
     }
 }
