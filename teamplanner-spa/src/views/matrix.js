@@ -25,7 +25,7 @@ export class VoteMatrix extends LitElement {
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            margin-top: 50px;
+            margin-top: 100px;
             margin-right: 5px;
         }
 
@@ -33,7 +33,7 @@ export class VoteMatrix extends LitElement {
             display: grid;
             grid-gap: 5px;
             grid-auto-columns: 100px;
-            grid-template-rows: 50px auto;
+            grid-template-rows: 100px auto;
             overflow-x: scroll;
         }
 
@@ -107,3 +107,4 @@ export class VoteMatrix extends LitElement {
         return elements
     }
 }
+
