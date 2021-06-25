@@ -1,13 +1,13 @@
 {
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "start:build": "npm run build && es-dev-server --root-dir dist --app-index index.html --compatibility none",
-    "start": "es-dev-server --app-index index.html --node-resolve --watch"
+    "start:build": "npm run build && web-dev-server --root-dir dist --app-index index.html --compatibility none",
+    "start": "web-dev-server --app-index index.html --node-resolve --watch"
   },
   "devDependencies": {
     "@open-wc/building-rollup": "^1.0.0",
-    "es-dev-server": "^1.5.0",
-    "rimraf": "^2.6.3",
+    "@web/dev-server": "^0.1.17",
+    "rimraf": "^3.0.2",
     "rollup": "^2.3.4",
     "rollup-plugin-copy": "^3.3.0"
   },
